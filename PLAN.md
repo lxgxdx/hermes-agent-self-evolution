@@ -1,8 +1,8 @@
-# Hermes Forge — Evolutionary Self-Improvement for Hermes Agent
+# Hermes Agent Evolution — Evolutionary Self-Improvement for Hermes Agent
 
 ## Vision
 
-A standalone optimization pipeline that systematically improves Hermes Agent's performance by evolving skills, prompts, tool descriptions, and agent configurations using automated optimization loops. Lives in its own repo (`NousResearch/hermes-forge`), operates ON hermes-agent — not part of it.
+A standalone optimization pipeline that systematically improves Hermes Agent's performance by evolving skills, prompts, tool descriptions, and agent configurations using automated optimization loops. Lives in its own repo (`NousResearch/hermes-agent-evolution`), operates ON hermes-agent — not part of it.
 
 Three complementary engines, unified under one workflow:
 
@@ -133,15 +133,15 @@ Human Review & Merge
 
 ### Where It Lives
 
-Hermes Forge lives in its own repo (`NousResearch/hermes-forge`), separate from hermes-agent. It pip-installs or clones hermes-agent to access its infrastructure, and outputs PRs against the hermes-agent repo.
+Hermes Agent Evolution lives in its own repo (`NousResearch/hermes-agent-evolution`), separate from hermes-agent. It pip-installs or clones hermes-agent to access its infrastructure, and outputs PRs against the hermes-agent repo.
 
 ```
-hermes-forge/                           # Standalone repo
+hermes-agent-evolution/                  # Standalone repo
 ├── PLAN.md                             # This file
 ├── README.md                           # Setup, usage, examples
 ├── pyproject.toml                      # Package config + dependencies (dspy, gepa)
 │
-├── forge/                              # Main package
+├── evolution/                          # Main package
 │   ├── core/                           # Shared infrastructure
 │   │   ├── __init__.py
 │   │   ├── dataset_builder.py          # Eval dataset generation (synthetic, SessionDB mining)
@@ -152,7 +152,7 @@ hermes-forge/                           # Standalone repo
 │   │
 │   ├── skills/                         # Phase 1: Skill evolution
 │   │   ├── __init__.py
-│   │   ├── evolve_skill.py            # Main entry: python -m forge.skills.evolve_skill --skill <name>
+│   │   ├── evolve_skill.py            # Main entry: python -m evolution.skills.evolve_skill --skill <name>
 │   │   └── skill_module.py            # Wraps SKILL.md as DSPy module
 │   │
 │   ├── tools/                          # Phase 2: Tool description evolution
@@ -171,31 +171,31 @@ hermes-forge/                           # Standalone repo
 
 ```bash
 # Clone and install
-git clone https://github.com/NousResearch/hermes-forge.git
-cd hermes-forge
+git clone https://github.com/NousResearch/hermes-agent-evolution.git
+cd hermes-agent-evolution
 pip install -e ".[dev]"
 
 # Point at hermes-agent repo (auto-detected from ~/.hermes/hermes-agent or env var)
 export HERMES_AGENT_REPO=~/.hermes/hermes-agent
 
 # Phase 1: Evolve a skill
-python -m forge.skills.evolve_skill \
+python -m evolution.skills.evolve_skill \
     --skill github-code-review \
     --iterations 10 \
     --eval-source synthetic         # or: sessiondb, golden, auto
 
 # Phase 2: Evolve tool descriptions
-python -m forge.tools.evolve_tool_descriptions \
+python -m evolution.tools.evolve_tool_descriptions \
     --iterations 5 \
     --benchmark-gate tblite-fast
 
 # Phase 3: Evolve a system prompt section
-python -m forge.prompts.evolve_prompt_section \
+python -m evolution.prompts.evolve_prompt_section \
     --section MEMORY_GUIDANCE \
     --iterations 5
 
 # Phase 4: Evolve tool code (uses Darwinian Evolver CLI)
-python -m forge.code.evolve_tool_code \
+python -m evolution.code.evolve_tool_code \
     --tool file_tools \
     --bug-issue 742 \
     --iterations 10
@@ -205,7 +205,7 @@ python -m forge.code.evolve_tool_code \
 
 ### Relationship to hermes-agent
 
-**hermes-forge operates ON hermes-agent, not inside it.** Zero changes to the agent repo are needed to use forge. It reads from the hermes-agent codebase and writes evolved versions to git branches, creating PRs for human review.
+**hermes-agent-evolution operates ON hermes-agent, not inside it.** Zero changes to the agent repo are needed. It reads from the hermes-agent codebase and writes evolved versions to git branches, creating PRs for human review.
 
 | hermes-agent Component | How Forge Uses It |
 |------------------------|-------------------|

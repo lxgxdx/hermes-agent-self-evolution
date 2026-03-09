@@ -2,7 +2,7 @@
 
 import pytest
 from pathlib import Path
-from forge.skills.skill_module import load_skill, reassemble_skill
+from evolution.skills.skill_module import load_skill, reassemble_skill
 
 
 SAMPLE_SKILL = """---

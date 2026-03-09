@@ -1,8 +1,8 @@
 """Tests for constraint validators."""
 
 import pytest
-from forge.core.constraints import ConstraintValidator
-from forge.core.config import ForgeConfig
+from evolution.core.constraints import ConstraintValidator
+from evolution.core.config import ForgeConfig
 
 
 @pytest.fixture

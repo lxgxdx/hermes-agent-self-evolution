@@ -1,4 +1,4 @@
-# ⚒ Hermes Forge
+# 🧬 Hermes Agent Evolution
 
 **Evolutionary self-improvement for [Hermes Agent](https://github.com/NousResearch/hermes-agent).**
 
@@ -29,15 +29,15 @@ GEPA reads execution traces to understand *why* things fail (not just that they 
 
 ```bash
 # Install
-git clone https://github.com/NousResearch/hermes-forge.git
-cd hermes-forge
+git clone https://github.com/NousResearch/hermes-agent-evolution.git
+cd hermes-agent-evolution
 pip install -e ".[dev]"
 
 # Point at your hermes-agent repo
 export HERMES_AGENT_REPO=~/.hermes/hermes-agent
 
 # Evolve a skill
-python -m forge.skills.evolve_skill \
+python -m evolution.skills.evolve_skill \
     --skill github-code-review \
     --iterations 10 \
     --eval-source synthetic

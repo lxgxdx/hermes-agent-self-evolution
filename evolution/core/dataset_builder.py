@@ -1,4 +1,4 @@
-"""Evaluation dataset generation for forge optimization.
+"""Evaluation dataset generation for hermes-agent-evolution.
 
 Sources:
 A) Synthetic generation — LLM reads a skill/tool/prompt and generates test cases
@@ -14,7 +14,7 @@ from typing import Optional
 
 import dspy
 
-from forge.core.config import ForgeConfig
+from evolution.core.config import ForgeConfig
 
 
 @dataclass

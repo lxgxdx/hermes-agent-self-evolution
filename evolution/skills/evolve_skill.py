@@ -1,8 +1,8 @@
 """Evolve a Hermes Agent skill using DSPy + GEPA.
 
 Usage:
-    python -m forge.skills.evolve_skill --skill github-code-review --iterations 10
-    python -m forge.skills.evolve_skill --skill arxiv --eval-source golden --dataset datasets/skills/arxiv/
+    python -m evolution.skills.evolve_skill --skill github-code-review --iterations 10
+    python -m evolution.skills.evolve_skill --skill arxiv --eval-source golden --dataset datasets/skills/arxiv/
 """
 
 import json
@@ -18,11 +18,11 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
 
-from forge.core.config import ForgeConfig, get_hermes_agent_path
-from forge.core.dataset_builder import SyntheticDatasetBuilder, EvalDataset, GoldenDatasetLoader
-from forge.core.fitness import skill_fitness_metric, LLMJudge, FitnessScore
-from forge.core.constraints import ConstraintValidator
-from forge.skills.skill_module import (
+from evolution.core.config import ForgeConfig, get_hermes_agent_path
+from evolution.core.dataset_builder import SyntheticDatasetBuilder, EvalDataset, GoldenDatasetLoader
+from evolution.core.fitness import skill_fitness_metric, LLMJudge, FitnessScore
+from evolution.core.constraints import ConstraintValidator
+from evolution.skills.skill_module import (
     SkillModule,
     load_skill,
     find_skill,
@@ -55,7 +55,7 @@ def evolve(
         config.hermes_agent_path = Path(hermes_repo)
 
     # ── 1. Find and load the skill ──────────────────────────────────────
-    console.print(f"\n[bold cyan]⚒  Hermes Forge[/bold cyan] — Evolving skill: [bold]{skill_name}[/bold]\n")
+    console.print(f"\n[bold cyan]🧬 Hermes Agent Evolution[/bold cyan] — Evolving skill: [bold]{skill_name}[/bold]\n")
 
     skill_path = find_skill(skill_name, config.hermes_agent_path)
     if not skill_path:

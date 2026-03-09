@@ -3,7 +3,7 @@ requires = ["setuptools>=68.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "hermes-forge"
+name = "hermes-agent-evolution"
 version = "0.1.0"
 description = "Evolutionary self-improvement for Hermes Agent — optimize skills, prompts, tool descriptions, and code using DSPy + GEPA"
 readme = "README.md"
@@ -32,11 +32,11 @@ darwinian = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/NousResearch/hermes-forge"
-Repository = "https://github.com/NousResearch/hermes-forge"
+Homepage = "https://github.com/NousResearch/hermes-agent-evolution"
+Repository = "https://github.com/NousResearch/hermes-agent-evolution"
 
 [tool.setuptools.packages.find]
-include = ["forge*"]
+include = ["evolution*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

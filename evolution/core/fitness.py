@@ -8,7 +8,7 @@ import dspy
 from dataclasses import dataclass
 from typing import Optional
 
-from forge.core.config import ForgeConfig
+from evolution.core.config import ForgeConfig
 
 
 @dataclass
