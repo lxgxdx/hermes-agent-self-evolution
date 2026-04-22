@@ -12,6 +12,8 @@ from pathlib import Path
 from datetime import datetime
 from typing import Optional
 
+from evolution.core.minimax_lm import get_lm
+
 import click
 import dspy
 from rich.console import Console
@@ -38,8 +40,8 @@ def evolve(
     iterations: int = 10,
     eval_source: str = "synthetic",
     dataset_path: Optional[str] = None,
-    optimizer_model: str = "openai/gpt-4.1",
-    eval_model: str = "openai/gpt-4.1-mini",
+    optimizer_model: str = "minimax/MiniMax-M2.7",
+    eval_model: str = "minimax/MiniMax-M2.7",
     hermes_repo: Optional[str] = None,
     run_tests: bool = False,
     dry_run: bool = False,
@@ -137,8 +139,8 @@ def evolve(
     console.print(f"  Optimizer model: {optimizer_model}")
     console.print(f"  Eval model: {eval_model}")
 
-    # Configure DSPy
-    lm = dspy.LM(eval_model)
+    # Configure DSPy — use MiniMaxLM for "minimax/" models, standard dspy.LM otherwise
+    lm = get_lm(eval_model, quality=config.minimax_quality)
     dspy.configure(lm=lm)
 
     # Create the baseline skill module
@@ -164,9 +166,9 @@ def evolve(
             trainset=trainset,
             valset=valset,
         )
-    except Exception as e:
-        # Fall back to MIPROv2 if GEPA isn't available in this DSPy version
-        console.print(f"[yellow]GEPA not available ({e}), falling back to MIPROv2[/yellow]")
+    except (TypeError, Exception) as e:
+        # Fall back to MIPROv2 if GEPA fails (wrong args, not installed, etc.)
+        console.print(f"[yellow]GEPA unavailable ({e}), falling back to MIPROv2[/yellow]")
         optimizer = dspy.MIPROv2(
             metric=skill_fitness_metric,
             auto="light",
@@ -299,8 +301,8 @@ def evolve(
 @click.option("--eval-source", default="synthetic", type=click.Choice(["synthetic", "golden", "sessiondb"]),
               help="Source for evaluation dataset")
 @click.option("--dataset-path", default=None, help="Path to existing eval dataset (JSONL)")
-@click.option("--optimizer-model", default="openai/gpt-4.1", help="Model for GEPA reflections")
-@click.option("--eval-model", default="openai/gpt-4.1-mini", help="Model for evaluations")
+@click.option("--optimizer-model", default="minimax/MiniMax-M2.7", help="Model for GEPA reflections (use minimax/* for MiniMax)")
+@click.option("--eval-model", default="minimax/MiniMax-M2.7", help="Model for evaluations (use minimax/* for MiniMax)")
 @click.option("--hermes-repo", default=None, help="Path to hermes-agent repo")
 @click.option("--run-tests", is_flag=True, help="Run full pytest suite as constraint gate")
 @click.option("--dry-run", is_flag=True, help="Validate setup without running optimization")

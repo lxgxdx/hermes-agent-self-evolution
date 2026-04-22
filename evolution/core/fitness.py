@@ -9,6 +9,7 @@ from dataclasses import dataclass
 from typing import Optional
 
 from evolution.core.config import EvolutionConfig
+from evolution.core.minimax_lm import get_lm
 
 
 @dataclass
@@ -71,8 +72,7 @@ class LLMJudge:
         max_size: Optional[int] = None,
     ) -> FitnessScore:
         """Score an agent output using LLM-as-judge."""
-
-        lm = dspy.LM(self.config.eval_model)
+        lm = get_lm(self.config.eval_model, quality=self.config.minimax_quality)
 
         with dspy.context(lm=lm):
             result = self.judge(

@@ -17,10 +17,14 @@ class EvolutionConfig:
     iterations: int = 10
     population_size: int = 5
 
-    # LLM configuration
-    optimizer_model: str = "openai/gpt-4.1"  # Model for GEPA reflections
-    eval_model: str = "openai/gpt-4.1-mini"  # Model for LLM-as-judge scoring
-    judge_model: str = "openai/gpt-4.1"  # Model for dataset generation
+    # LLM configuration — use minimax/* for MiniMax, openai/* for OpenAI
+    optimizer_model: str = "minimax/MiniMax-M2.7"  # Model for GEPA reflections
+    eval_model: str = "minimax/MiniMax-M2.7"  # Model for LLM-as-judge scoring
+    judge_model: str = "minimax/MiniMax-M2.7"  # Model for dataset generation
+
+    # MiniMax quality setting: "highspeed" (default, faster/cheaper) or None (standard)
+    # Only used when model starts with "minimax/"
+    minimax_quality: Optional[str] = "highspeed"
 
     # Constraints
     max_skill_size: int = 15_000  # 15KB default

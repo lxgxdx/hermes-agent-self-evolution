@@ -15,6 +15,7 @@ from typing import Optional
 import dspy
 
 from evolution.core.config import EvolutionConfig
+from evolution.core.minimax_lm import get_lm
 
 
 @dataclass
@@ -123,7 +124,7 @@ class SyntheticDatasetBuilder:
         n = num_cases or self.config.eval_dataset_size
 
         # Configure DSPy to use the judge model for generation
-        lm = dspy.LM(self.config.judge_model)
+        lm = get_lm(self.config.judge_model, quality=self.config.minimax_quality)
 
         with dspy.context(lm=lm):
             result = self.generator(
@@ -136,13 +137,65 @@ class SyntheticDatasetBuilder:
         try:
             cases_raw = json.loads(result.test_cases)
         except json.JSONDecodeError:
-            # Try to extract JSON from the response
+            # Try to extract JSON from the response with a robust parser
             import re
-            match = re.search(r'\[.*\]', result.test_cases, re.DOTALL)
-            if match:
-                cases_raw = json.loads(match.group())
-            else:
-                raise ValueError(f"Could not parse test cases from LLM output: {result.test_cases[:200]}")
+            raw = result.test_cases.strip()
+
+            # Strip markdown code block (```json ... ```)
+            code_block_match = re.match(r'```(?:\w+)?\n?(.*?)\n?```', raw, re.DOTALL)
+            if code_block_match:
+                raw = code_block_match.group(1).strip()
+
+            # Try direct parse first
+            try:
+                cases_raw = json.loads(raw)
+            except json.JSONDecodeError:
+                # Fallback: find the first complete JSON array or object
+                # using bracket counting to handle truncated JSON
+                def extract_json(text):
+                    """Extract JSON by counting brackets from first { or [."""
+                    text = text.strip()
+                    if not text:
+                        return None
+                    # Find first opening bracket
+                    start = None
+                    for i, c in enumerate(text):
+                        if c in ('{', '['):
+                            start = i
+                            break
+                    if start is None:
+                        return None
+                    opener = text[start]
+                    closer = '}' if opener == '{' else ']'
+                    depth = 0
+                    in_string = False
+                    escape_next = False
+                    for i in range(start, len(text)):
+                        c = text[i]
+                        if escape_next:
+                            escape_next = False
+                            continue
+                        if c == '\\':
+                            escape_next = True
+                            continue
+                        if c == '"' and not escape_next:
+                            in_string = not in_string
+                            continue
+                        if in_string:
+                            continue
+                        if c == opener:
+                            depth += 1
+                        elif c == closer:
+                            depth -= 1
+                            if depth == 0:
+                                return text[start:i+1]
+                    return None  # Truncated/incomplete
+
+                extracted = extract_json(raw)
+                if extracted:
+                    cases_raw = json.loads(extracted)
+                else:
+                    raise ValueError(f"Could not parse test cases from LLM output: {result.test_cases[:500]}")
 
         examples = [
             EvalExample(
