@@ -126,8 +126,13 @@ class MiniMaxLM(BaseLM):
 
     @property
     def supports_response_schema(self) -> bool:
-        """MiniMax supports structured output via response_format."""
-        return True
+        """MiniMax's structured output is unreliable for complex DSPy signatures.
+
+        Setting to False forces DSPy's JSON adapter to use plain JSON mode
+        without response_format constraints. This is more stable with MiniMax
+        for complex multi-field signatures like ScoreRelevance (ChainOfThought).
+        """
+        return False
 
     @property
     def supported_params(self) -> set:
