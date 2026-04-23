@@ -184,11 +184,15 @@ def evolve(
     # ── 6. Extract evolved skill text ───────────────────────────────────
     # The optimized module's instructions contain the evolved skill text
     evolved_body = optimized_module.skill_text
-    evolved_full = reassemble_skill(skill["frontmatter"], evolved_body)
+    # Fallback: if frontmatter is missing/invalid, generate minimal frontmatter
+    frontmatter = skill["frontmatter"]
+    if not frontmatter or not frontmatter.strip():
+        frontmatter = f"name: {skill['name']}\ndescription: {skill.get('description', 'Auto-evolved skill')}"
+    evolved_full = reassemble_skill(frontmatter, evolved_body)
 
     # ── 7. Validate evolved skill ───────────────────────────────────────
     console.print(f"\n[bold]Validating evolved skill[/bold]")
-    evolved_constraints = validator.validate_all(evolved_body, "skill", baseline_text=skill["body"])
+    evolved_constraints = validator.validate_all(evolved_full, "skill", baseline_text=skill["body"])
     all_pass = True
     for c in evolved_constraints:
         icon = "✓" if c.passed else "✗"
